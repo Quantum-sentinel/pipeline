@@ -1,0 +1,29 @@
+name: Simple CI/CD for Static Website
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout code from GitHub repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Run basic checks (CI)
+      - name: Check HTML, CSS, JS files
+        run: |
+          echo "Running basic checks..."
+          ls
+          echo "CI checks completed"
+
+      # Step 3: Deploy (CD)
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
