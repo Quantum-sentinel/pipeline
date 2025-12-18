@@ -21,9 +21,22 @@ jobs:
           ls
           echo "CI checks completed"
 
-      # Step 3: Deploy (CD)
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
+          role-to-assume: arn:aws:iam::"${{ secrets.AWS_ACCOUNT_ID }}":role/GitHubActionsSSMRole
+          aws-region: "${{ secrets.AWS_REGION }}"
+      
+      - name: Upload HTML to EC2 via SSM
+        run: |
+          aws ssm send-command \
+            --instance-ids "${{ secrets.INSTANCE_ID }}" \
+            --document-name "AWS-RunShellScript" \
+            --comment "Deploy static HTML site" \
+            --parameters commands='[
+              "sudo mkdir -p /var/www/html",
+              "sudo tee /var/www/html/index.html > /dev/null <<EOF",
+              "'"$(cat index.html)"'",
+              "EOF",
+              "sudo systemctl reload nginx"
+            ]'
