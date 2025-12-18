@@ -41,8 +41,8 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --comment "Deploy static HTML site" \
             --parameters commands='[
-              "sudo mkdir -p /var/www/html",
-              "sudo tee /var/www/html/index.html > /dev/null <<EOF",
+              "sudo mkdir -p /usr/share/nginx/html",
+              "sudo tee /usr/share/nginx/html/index.html > /dev/null <<EOF",
               "'"$(cat index.html)"'",
               "EOF",
               "sudo systemctl reload nginx"
